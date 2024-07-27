@@ -1,33 +1,34 @@
 from flask import Flask, request, jsonify
 from langchain_community.llms import Ollama
-
+from flask_cors import CORS
 app = Flask(__name__)
-
+CORS(app)  
 
 llm = Ollama(model="llama3")
 
 
-def is_abc_prompt(prompt):
-    abc_keywords = ['ABC notation', 'music notation', 'sheet music', 'musical score']
-    for keyword in abc_keywords:
-        if keyword.lower() in prompt.lower():
-            return True
-    return False
 
 @app.route('/ask-ollama', methods=['POST'])
 def ask_ollama():
-    # Get prompt from request JSON
+
     data = request.get_json()
     prompt = data.get('prompt', '')
+    
+    
 
 
-    if not is_abc_prompt(prompt):
-        return jsonify({'error': 'Prompt must be related to ABC notation'}), 400
-
-
-    response = llm.invoke(prompt+'only return abc notation no other text is required')
+    response = llm.invoke(prompt)
     print(response)
-    return jsonify({'response': response})
+ 
+    try:
+
+
+        if response:
+            return jsonify( response)
+        else:
+            return jsonify({'error': 'No ABC notation found in the response'}), 500
+    except Exception as e:
+        return jsonify({'error': f'Failed to parse response: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

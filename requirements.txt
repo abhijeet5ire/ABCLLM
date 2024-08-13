@@ -1,0 +1,5 @@
+Flask==3.0.3
+langchain==0.2.11
+langchain-community==0.2.12 
+langchain-core==0.2.30 
+Flask-Cors==4.0.1
